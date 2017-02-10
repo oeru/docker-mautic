@@ -1,8 +1,6 @@
-FROM php:5.6-apache
-MAINTAINER Michael Babker <michael.babker@mautic.org> (@mbabker)
-
-# Enable Apache Rewrite Module
-RUN a2enmod rewrite
+FROM php:5.6-fpm
+MAINTAINER Dave Lane <dave@oerfoundation.org> (@lightweight)
+# based on that by MAINTAINER Michael Babker <michael.babker@mautic.org> (@mbabker)
 
 # Install PHP extensions
 RUN apt-get update && apt-get install -y libc-client-dev libicu-dev libkrb5-dev libmcrypt-dev libssl-dev unzip zip
@@ -13,12 +11,11 @@ RUN docker-php-ext-install imap intl mbstring mcrypt mysqli pdo pdo_mysql
 VOLUME /var/www/html
 
 # Define Mautic version and expected SHA1 signature
-ENV MAUTIC_VERSION 1.2.4
-ENV MAUTIC_SHA1 f0f89343f9ce67b6b4cafb44fd7b15f325ed726f
+ENV MAUTIC_VERSION 2.6.0
 
+# do a GitHub download
 # Download package and extract to web volume
-RUN curl -o mautic.zip -SL https://s3.amazonaws.com/mautic/releases/${MAUTIC_VERSION}.zip \
-	&& echo "$MAUTIC_SHA1 *mautic.zip" | sha1sum -c - \
+RUN curl -o mautic.zip -SL https://github.com/mautic/mautic/archive/${MAUTIC_VERSION}.zip \
 	&& mkdir /usr/src/mautic \
 	&& unzip mautic.zip -d /usr/src/mautic \
 	&& rm mautic.zip \
@@ -28,6 +25,5 @@ RUN curl -o mautic.zip -SL https://s3.amazonaws.com/mautic/releases/${MAUTIC_VER
 COPY docker-entrypoint.sh /entrypoint.sh
 COPY makeconfig.php /makeconfig.php
 COPY makedb.php /makedb.php
-
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["apache2-foreground"]
+CMD ["php-fpm"]
