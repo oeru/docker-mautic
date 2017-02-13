@@ -6,7 +6,9 @@ MAINTAINER Dave Lane <dave@oerfoundation.org> (@lightweight)
 RUN apt-get update && apt-get install -y libc-client-dev libicu-dev libkrb5-dev libmcrypt-dev libssl-dev unzip zip
 RUN rm -rf /var/lib/apt/lists/*
 RUN docker-php-ext-configure imap --with-imap --with-imap-ssl --with-kerberos
-RUN docker-php-ext-install imap intl mbstring mcrypt mysqli pdo pdo_mysql
+RUN docker-php-ext-install imap intl mbstring mcrypt mysqli pdo pdo_mysql zip
+# address Mautic-specific config requirements
+RUN echo "always_populate_raw_post_data = -1" > /usr/local/etc/php-fpm.d/mautic.conf
 
 VOLUME /var/www/html
 
@@ -16,8 +18,8 @@ ENV MAUTIC_VERSION 2.6.0
 # do a GitHub download
 # Download package and extract to web volume
 RUN curl -o mautic.zip -SL https://github.com/mautic/mautic/archive/${MAUTIC_VERSION}.zip \
-	&& mkdir /usr/src/mautic \
-	&& unzip mautic.zip -d /usr/src/mautic \
+	&& unzip mautic.zip -d /usr/src \
+    && mv /usr/src/mautic-${MAUTIC_VERSION} /usr/src/mautic \
 	&& rm mautic.zip \
 	&& chown -R www-data:www-data /usr/src/mautic
 
