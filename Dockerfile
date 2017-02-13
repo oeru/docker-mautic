@@ -8,7 +8,8 @@ RUN rm -rf /var/lib/apt/lists/*
 RUN docker-php-ext-configure imap --with-imap --with-imap-ssl --with-kerberos
 RUN docker-php-ext-install imap intl mbstring mcrypt mysqli pdo pdo_mysql zip
 # address Mautic-specific config requirements
-RUN echo "always_populate_raw_post_data = -1" > /usr/local/etc/php-fpm.d/mautic.conf
+#RUN echo "always_populate_raw_post_data = -1" > /usr/local/etc/php-fpm.d/mautic.conf
+RUN echo "always_populate_raw_post_data = -1" > /usr/local/etc/php/conf.d/php.ini
 
 VOLUME /var/www/html
 
