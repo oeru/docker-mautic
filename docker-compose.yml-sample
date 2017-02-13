@@ -1,0 +1,31 @@
+# copy this to docker-compose.yml and update with your specific values.
+# ** Careful not to commit passwords if you're planning to publically host this in a git repo somewhere! **
+version: "2"
+
+# create and launch these containers (after tweaking the configuration files) with 'docker-compose up'
+services:
+    mautic:
+        image: kiwilightweight/mautic
+        # create a suitable database before running 'docker-compose up'
+        environment:
+            MAUTIC_DB_HOST: [hostname or IP]
+            MAUTIC_DB_NAME: mautic
+            MAUTIC_DB_USER: mautic
+            MAUTIC_DB_PASSWORD: [db password]
+        expose:
+            - 9000
+        volumes:
+            - [your local mautic directory]:/var/www/html
+#
+# this is optional - alternatively, you can use the "conf.d/default.conf" as the basis
+# for an nginx site conf file on your Docker host. In the latter case, comment this
+# whole section out.
+    nginx:
+        image: nginx
+        links:
+            - mautic:mautic
+        ports:
+            - 127.0.0.1:8083:80
+        volumes:
+            - [your local conf.d directory]:/etc/nginx/conf.d
+            - [your local mautic directory, prob same as above]:/var/www/html
