@@ -3,7 +3,9 @@ MAINTAINER Dave Lane <dave@oerfoundation.org> (@lightweight)
 # based on that by MAINTAINER Michael Babker <michael.babker@mautic.org> (@mbabker)
 
 # Install PHP extensions
-RUN apt-get update && apt-get install -y libc-client-dev libicu-dev libkrb5-dev libmcrypt-dev libssl-dev unzip zip
+RUN apt-get update && apt-get install -y libc-client-dev libicu-dev \
+    libkrb5-dev libmcrypt-dev libssl-dev unzip zip
+RUN apt-get install net-tools vim dnsutils
 RUN rm -rf /var/lib/apt/lists/*
 RUN docker-php-ext-configure imap --with-imap --with-imap-ssl --with-kerberos
 RUN docker-php-ext-install imap intl mbstring mcrypt mysqli pdo pdo_mysql zip

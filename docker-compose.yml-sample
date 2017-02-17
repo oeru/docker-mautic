@@ -12,8 +12,8 @@ services:
             MAUTIC_DB_NAME: mautic
             MAUTIC_DB_USER: mautic
             MAUTIC_DB_PASSWORD: [db password]
-        expose:
-            - 9000
+        ports:
+            - 9000:9000
         volumes:
             - [your local mautic directory]:/var/www/html
 #
