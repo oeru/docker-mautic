@@ -44,7 +44,7 @@ If you're running MySQL or MariaDB in another container, add another stanza to t
 
 # Supported Docker versions
 
-This has been tested on Docker 1.13.1 on Ubuntu Linux 16.04 and Docker 1.9.1 on Ubuntu 14.04.
+This has been tested on Docker 1.13.1 on Ubuntu Linux 16.04 and requires Docker 1.10.x or better.
 
 # User Feedback
 
