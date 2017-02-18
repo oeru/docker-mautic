@@ -3,15 +3,16 @@ MAINTAINER Dave Lane <dave@oerfoundation.org> (@lightweight)
 # based on that by MAINTAINER Michael Babker <michael.babker@mautic.org> (@mbabker)
 
 # Install PHP extensions
-RUN apt-get update && apt-get install -y libc-client-dev libicu-dev \
+RUN apt-get update && apt-get install -y git libc-client-dev libicu-dev \
     libkrb5-dev libmcrypt-dev libssl-dev unzip zip
-RUN apt-get install net-tools vim dnsutils
+RUN apt-get install -y net-tools vim dnsutils
 RUN rm -rf /var/lib/apt/lists/*
 RUN docker-php-ext-configure imap --with-imap --with-imap-ssl --with-kerberos
 RUN docker-php-ext-install imap intl mbstring mcrypt mysqli pdo pdo_mysql zip
 # address Mautic-specific config requirements
-#RUN echo "always_populate_raw_post_data = -1" > /usr/local/etc/php-fpm.d/mautic.conf
-RUN echo "always_populate_raw_post_data = -1" > /usr/local/etc/php/conf.d/php.ini
+RUN echo "always_populate_raw_post_data = -1;" > /usr/local/etc/php/conf.d/php.ini
+RUN echo 'date.timezone = "Pacific/Auckland";' >> /usr/local/etc/php/conf.d/php.ini
+RUN echo 'cgi.fix_pathinfo = 0;' >> /usr/local/etc/php/conf.d/php.ini
 
 VOLUME /var/www/html
 

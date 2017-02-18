@@ -2,9 +2,8 @@
 #
 #
 server {
-	listen :80;
-	server_name [your domain];
-
+	listen 80;
+	server_name localhost;
 	root /var/www/html;
 
     location /.well-known {
@@ -13,14 +12,14 @@ server {
 
     # redirect all HTTP traffic to HTTPS.
     location / {
-    	return	301 https://[your domain]$request_uri;
+    	return	301 https://localhost$request_uri;
     }
 }
 
 server {
-	listen	5.9.142.102:443 ssl;
+	listen	443 ssl;
 	ssl on;
-	ssl_certificate /etc/letsencrypt/live/[your domain]/fullchain.pem;
+	ssl_certificate /etc/letsencrypt/live/localhost/fullchain.pem;
 	ssl_certificate_key /etc/letsencrypt/live/[yourdomain]/privkey.pem;
 	ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
     # to create this, see https://raymii.org/s/tutorials/Strong_SSL_Security_On_nginx.html
