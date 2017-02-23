@@ -17,7 +17,7 @@ RUN echo 'cgi.fix_pathinfo = 0;' >> /usr/local/etc/php/conf.d/php.ini
 VOLUME /var/www/html
 
 # Define Mautic version and expected SHA1 signature
-ENV MAUTIC_VERSION 2.6.0
+ENV MAUTIC_VERSION 2.6.1
 
 # do a GitHub download
 # Download package and extract to web volume

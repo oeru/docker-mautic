@@ -19,7 +19,7 @@ server {
 server {
 	listen	443 ssl;
 	ssl on;
-	ssl_certificate /etc/letsencrypt/live/localhost/fullchain.pem;
+	ssl_certificate /etc/letsencrypt/live/[yourdomain]/fullchain.pem;
 	ssl_certificate_key /etc/letsencrypt/live/[yourdomain]/privkey.pem;
 	ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
     # to create this, see https://raymii.org/s/tutorials/Strong_SSL_Security_On_nginx.html
@@ -70,11 +70,11 @@ server {
         log_not_found off;
     }
     # Deny all attempts to access hidden files/folders such as .htaccess, .htpasswd, .DS_Store (Mac), etc...
-    location ~ /\. {
-        deny all;
-        access_log off;
-        log_not_found off;
-    }
+    #location ~ /\. {
+    #    deny all;
+    #    access_log off;
+    #    log_not_found off;
+    #}
 
     # Deny all grunt, composer files
     location ~* (Gruntfile|package|composer)\.(js|json)$ {
@@ -88,7 +88,7 @@ server {
         #fastcgi_pass unix:/var/run/php5-fpm.sock;
         #
         # replace "mautic" with the name or IP of your container if not using an nginx container, too.
-        fastcgi_pass mautic:9000;
+        fastcgi_pass localhost:9000;
         fastcgi_split_path_info ^(.+\.php)(/.+)$;
         fastcgi_keep_conn on;
         fastcgi_index  index.php;
