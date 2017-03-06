@@ -1,9 +1,9 @@
-FROM php:5.6-fpm
+FROM php:7.0-fpm
 MAINTAINER Dave Lane <dave@oerfoundation.org> (@lightweight)
 # based on that by MAINTAINER Michael Babker <michael.babker@mautic.org> (@mbabker)
 
 # Install PHP extensions
-RUN apt-get update && apt-get install -y git libc-client-dev libicu-dev \
+RUN apt-get update && apt-get install -y apt-utils git libc-client-dev libicu-dev \
     libkrb5-dev libmcrypt-dev libssl-dev unzip zip
 RUN apt-get install -y net-tools vim dnsutils
 RUN rm -rf /var/lib/apt/lists/*
@@ -17,7 +17,7 @@ RUN echo 'cgi.fix_pathinfo = 0;' >> /usr/local/etc/php/conf.d/php.ini
 VOLUME /var/www/html
 
 # Define Mautic version and expected SHA1 signature
-ENV MAUTIC_VERSION 2.6.1
+ENV MAUTIC_VERSION 2.7.0
 
 # do a GitHub download
 # Download package and extract to web volume
