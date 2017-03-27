@@ -21,20 +21,20 @@ RUN echo 'cgi.fix_pathinfo = 0;' >> /usr/local/etc/php/conf.d/php.ini
 RUN echo '# cron jobs for Mautic - dave@oerfoundation.org' > /etc/cron.d/mautic-cron
 RUN echo '# see https://mautic.org/docs/en/setup/cron_jobs.html for details' >> /etc/cron.d/mautic-cron
 RUN echo 'CONSOLE=/var/www/html/app/console'
-RUN echo '# Run Segment updates 3 times per hour' >> /etc/cron.d/mautic-cron/etc/cron.d/mautic-cron
-RUN echo '0,20,40 * * * * root php $CONSOLE mautic:segments:update' >> /etc/cron.d/mautic-cron/etc/cron.d/mautic-cron
-RUN echo '# Run Campaign updates - ensure candidates are correct - 3 times per hour' >> /etc/cron.d/mautic-cron/etc/cron.d/mautic-cron
-RUN echo '5,25,45 * * * * root php $CONSOLE mautic:campaigns:rebuild' >> /etc/cron.d/mautic-cron/etc/cron.d/mautic-cron
-RUN echo '# Run Campaign events 3 times per hour' >> /etc/cron.d/mautic-cron/etc/cron.d/mautic-cron
-RUN echo '10,30,50 * * * * root php $CONSOLE mautic:campaigns:trigger' >> /etc/cron.d/mautic-cron/etc/cron.d/mautic-cron
-RUN echo '# Process Email Queue every other hour' >> /etc/cron.d/mautic-cron/etc/cron.d/mautic-cron
-RUN echo '15 */2 * * * root php $CONSOLE ' >> /etc/cron.d/mautic-cron/etc/cron.d/mautic-cron
-RUN echo '# Fetch and Process Monitored Email 4 times daily' >> /etc/cron.d/mautic-cron/etc/cron.d/mautic-cron
-RUN echo '15 1,7,13,19 * * * root php $CONSOLE ' >> /etc/cron.d/mautic-cron/etc/cron.d/mautic-cron
-RUN echo '# Social Monitoring 4 times daily' >> /etc/cron.d/mautic-cron/etc/cron.d/mautic-cron
-RUN echo '15 3,9,15,21 * * * root php $CONSOLE ' >> /etc/cron.d/mautic-cron/etc/cron.d/mautic-cron
-RUN echo '# Process Webhooks 4 times daily' >> /etc/cron.d/mautic-cron/etc/cron.d/mautic-cron
-RUN echo '15 5,11,17,23 * * * root php $CONSOLE ' >> /etc/cron.d/mautic-cron/etc/cron.d/mautic-cron
+RUN echo '# Run Segment updates 3 times per hour' >> /etc/cron.d/mautic-cron
+RUN echo '0,20,40 * * * * root php $CONSOLE mautic:segments:update' >> /etc/cron.d/mautic-cron
+RUN echo '# Run Campaign updates - ensure candidates are correct - 3 times per hour' >> /etc/cron.d/mautic-cron
+RUN echo '5,25,45 * * * * root php $CONSOLE mautic:campaigns:rebuild' >> /etc/cron.d/mautic-cron
+RUN echo '# Run Campaign events 3 times per hour' >> /etc/cron.d/mautic-cron
+RUN echo '10,30,50 * * * * root php $CONSOLE mautic:campaigns:trigger' >> /etc/cron.d/mautic-cron
+RUN echo '# Process Email Queue every other hour' >> /etc/cron.d/mautic-cron
+RUN echo '15 */2 * * * root php $CONSOLE ' >> /etc/cron.d/mautic-cron
+RUN echo '# Fetch and Process Monitored Email 4 times daily' >> /etc/cron.d/mautic-cron
+RUN echo '15 1,7,13,19 * * * root php $CONSOLE ' >> /etc/cron.d/mautic-cron
+RUN echo '# Social Monitoring 4 times daily' >> /etc/cron.d/mautic-cron
+RUN echo '15 3,9,15,21 * * * root php $CONSOLE ' >> /etc/cron.d/mautic-cron
+RUN echo '# Process Webhooks 4 times daily' >> /etc/cron.d/mautic-cron
+RUN echo '15 5,11,17,23 * * * root php $CONSOLE ' >> /etc/cron.d/mautic-cron
 
 VOLUME /var/www/html
 
