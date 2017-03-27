@@ -6,6 +6,9 @@ version: "2"
 services:
     mautic:
         image: kiwilightweight/mautic
+##       Uncomment if running the nginx container below
+#        links:
+#            - mauticdb:mysql
         # create a suitable database before running 'docker-compose up'
         environment:
             MAUTIC_DB_HOST: [hostname or IP]
@@ -13,19 +16,27 @@ services:
             MAUTIC_DB_USER: mautic
             MAUTIC_DB_PASSWORD: [db password]
         ports:
-            - 9000:9000
+            - 127.0.0.1:9000:9000
         volumes:
-            - [your local mautic directory]:/var/www/html
-#
-# this is optional - alternatively, you can use the "conf.d/default.conf" as the basis
-# for an nginx site conf file on your Docker host. In the latter case, comment this
-# whole section out.
-    nginx:
-        image: nginx
-        links:
-            - mautic:mautic
-        ports:
-            - 127.0.0.1:8083:80
-        volumes:
-            - [your local conf.d directory]:/etc/nginx/conf.d
-            - [your local mautic directory, prob same as above]:/var/www/html
+            - [your local mautic directory]/src:/var/www/html
+            - [your local mautic directory]/msmtprc:/etc/msmtprc
+        restart:
+            unless-stopped
+##
+## this is optional - alternatively, you can use the "conf.d/default.conf" as the basis
+## for an nginx site conf file on your Docker host. In the latter case, comment this
+## whole section out.
+#    nginx:
+#        image: nginx
+#        links:
+#            - mautic:mautic
+#        ports:
+#            #  If running this locally - requires reverse proxy for external visibility
+#            - 127.0.0.1:8083:80
+#            # If running the nginx container exposed directly to the 'net
+##           - 127.0.0.1:80:80
+#        volumes:
+#            - [your local mautic directory, nginx default.conf file]:/etc/nginx/sites-available/default
+#            - [your local mautic directory, prob same as above]:/var/www/html
+#        restart:
+#            unless-stopped
