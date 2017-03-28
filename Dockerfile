@@ -20,7 +20,7 @@ RUN echo 'cgi.fix_pathinfo = 0;' >> /usr/local/etc/php/conf.d/php.ini
 # set up cron tasks
 RUN echo '# cron jobs for Mautic - dave@oerfoundation.org' > /etc/cron.d/mautic-cron
 RUN echo '# see https://mautic.org/docs/en/setup/cron_jobs.html for details' >> /etc/cron.d/mautic-cron
-RUN echo 'CONSOLE=/var/www/html/app/console'
+RUN echo 'CONSOLE=/var/www/html/app/console' >> /etc/cron.d/mautic-cron
 RUN echo '# Run Segment updates 3 times per hour' >> /etc/cron.d/mautic-cron
 RUN echo '0,20,40 * * * * root php $CONSOLE mautic:segments:update' >> /etc/cron.d/mautic-cron
 RUN echo '# Run Campaign updates - ensure candidates are correct - 3 times per hour' >> /etc/cron.d/mautic-cron
