@@ -39,7 +39,7 @@ RUN echo '15 5,11,17,23 * * * root php $CONSOLE ' >> /etc/cron.d/mautic-cron
 VOLUME /var/www/html
 
 # Define Mautic version and expected SHA1 signature
-ENV MAUTIC_VERSION 2.8.3
+ENV MAUTIC_VERSION 2.8.2
 
 # do a GitHub download
 # Download package and extract to web volume
