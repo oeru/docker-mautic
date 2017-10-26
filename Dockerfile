@@ -12,7 +12,7 @@ RUN apt-get install -y cron msmtp
 RUN rm -rf /var/lib/apt/lists/*
 # install relevant PHP extensions
 RUN docker-php-ext-configure imap --with-imap --with-imap-ssl --with-kerberos
-RUN docker-php-ext-install imap intl mbstring mcrypt mysqli pdo pdo_mysql zip
+RUN docker-php-ext-install bcmath imap intl mbstring mcrypt mysqli pdo pdo_mysql zip
 # address Mautic-specific PHP config requirements
 RUN echo "always_populate_raw_post_data = -1;" > /usr/local/etc/php/conf.d/php.ini
 RUN echo 'date.timezone = "Pacific/Auckland";' >> /usr/local/etc/php/conf.d/php.ini
@@ -39,7 +39,7 @@ RUN echo '15 5,11,17,23 * * * root php $CONSOLE ' >> /etc/cron.d/mautic-cron
 VOLUME /var/www/html
 
 # Define Mautic version and expected SHA1 signature
-ENV MAUTIC_VERSION 2.8.2
+ENV MAUTIC_VERSION 2.11.0
 
 # do a GitHub download
 # Download package and extract to web volume
