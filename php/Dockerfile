@@ -31,31 +31,10 @@ RUN echo 'security.limit_extensions = .php' >> /usr/local/etc/php-fpm.d/www.conf
 RUN echo 'catch_workers_output = yes' >> /usr/local/etc/php-fpm.d/www.conf
 RUN echo 'php_admin_value[memory_limit] = 250M' >> /usr/local/etc/php-fpm.d/www.conf
 
-# set up cron tasks
-RUN echo '# cron jobs for Mautic - dave@oerfoundation.org' > /etc/cron.d/mautic-cron
-RUN echo '# see https://mautic.org/docs/en/setup/cron_jobs.html for details' >> /etc/cron.d/mautic-cron
-RUN echo 'CONSOLE=/var/www/html/app/console' >> /etc/cron.d/mautic-cron
-RUN echo '# Run Segment updates 3 times per hour' >> /etc/cron.d/mautic-cron
-RUN echo '0,20,40 * * * * root php $CONSOLE mautic:segments:update' >> /etc/cron.d/mautic-cron
-RUN echo '# Run Campaign updates - ensure candidates are correct - 3 times per hour' >> /etc/cron.d/mautic-cron
-RUN echo '5,25,45 * * * * root php $CONSOLE mautic:campaigns:rebuild' >> /etc/cron.d/mautic-cron
-RUN echo '# Run Campaign events 3 times per hour' >> /etc/cron.d/mautic-cron
-RUN echo '10,30,50 * * * * root php $CONSOLE mautic:campaigns:trigger' >> /etc/cron.d/mautic-cron
-RUN echo '# Process Email Queue every other hour' >> /etc/cron.d/mautic-cron
-RUN echo '15 */2 * * * root php $CONSOLE ' >> /etc/cron.d/mautic-cron
-RUN echo '# Fetch and Process Monitored Email 4 times daily' >> /etc/cron.d/mautic-cron
-RUN echo '15 1,7,13,19 * * * root php $CONSOLE ' >> /etc/cron.d/mautic-cron
-RUN echo '# Social Monitoring 4 times daily' >> /etc/cron.d/mautic-cron
-RUN echo '15 3,9,15,21 * * * root php $CONSOLE ' >> /etc/cron.d/mautic-cron
-RUN echo '# Process Webhooks 4 times daily' >> /etc/cron.d/mautic-cron
-RUN echo '15 5,11,17,23 * * * root php $CONSOLE ' >> /etc/cron.d/mautic-cron
-RUN echo '# Just testing' >> /etc/cron.d/mautic-cron
-RUN echo '*/1 * * * * root echo "Running cron at $(date)" ' >> /etc/cron.d/mautic-cron
-
-VOLUME /var/www/html
+VOLUME ['/var/www/html']
 
 # Define Mautic version and expected SHA1 signature
-ENV MAUTIC_VERSION 2.11.0
+ENV MAUTIC_VERSION 2.12.1
 
 # do a GitHub download
 # Download package and extract to web volume

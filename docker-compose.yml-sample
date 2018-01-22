@@ -19,7 +19,15 @@ services:
             - 127.0.0.1:9000:9000
         volumes:
             - [your local mautic directory]/src:/var/www/html
-            - [your local mautic directory]/msmtprc:/etc/msmtprc
+        restart:
+            unless-stopped
+    mautic-cron:
+        image: oeru/mautic-cron
+        links:
+            - mautic
+        volumes:
+            # note, this needs to be the same as the directory for mautic
+            - [your local mautic directory]/src:/var/www/html
         restart:
             unless-stopped
 ##
@@ -29,7 +37,7 @@ services:
 #    nginx:
 #        image: nginx
 #        links:
-#            - mautic:mautic
+#            - mautic
 #        ports:
 #            #  If running this locally - requires reverse proxy for external visibility
 #            - 127.0.0.1:8083:80
