@@ -3,8 +3,9 @@ MAINTAINER Dave Lane <dave@oerfoundation.org> (@lightweight)
 # based on that by MAINTAINER Michael Babker <michael.babker@mautic.org> (@mbabker)
 
 # Install PHP extensions
-RUN apt-get update && apt-get install -y apt-utils git libc-client-dev libicu-dev \
-    libkrb5-dev libmcrypt-dev libssl-dev unzip zip
+RUN apt-get update && apt-get install -y apt-utils git libc-client-dev \
+    libcurl3-dev libcurl3-openssl-dev libicu-dev libkrb5-dev libmcrypt-dev \
+    libpng-dev libpspell-dev libssl-dev libxml2-dev unzip zip
 RUN apt-get install -y net-tools vim dnsutils
 # install cron and msmtp for outgoing email
 RUN apt-get install -y cron msmtp
@@ -12,11 +13,24 @@ RUN apt-get install -y cron msmtp
 RUN rm -rf /var/lib/apt/lists/*
 # install relevant PHP extensions
 RUN docker-php-ext-configure imap --with-imap --with-imap-ssl --with-kerberos
-RUN docker-php-ext-install bcmath imap intl mbstring mcrypt mysqli pdo pdo_mysql zip
+RUN docker-php-ext-install bcmath curl gd imap intl mbstring mcrypt \
+    mysqli opcache pdo pdo_mysql pspell xml zip
 # address Mautic-specific PHP config requirements
-RUN echo "always_populate_raw_post_data = -1;" > /usr/local/etc/php/conf.d/php.ini
-RUN echo 'date.timezone = "Pacific/Auckland";' >> /usr/local/etc/php/conf.d/php.ini
-RUN echo 'cgi.fix_pathinfo = 0;' >> /usr/local/etc/php/conf.d/php.ini
+RUN echo "log_errors = on" > /usr/local/etc/php/conf.d/php.ini
+RUN echo "display_errors = off" >> /usr/local/etc/php/conf.d/php.ini
+RUN echo "always_populate_raw_post_data = -1" >> /usr/local/etc/php/conf.d/php.ini
+RUN echo 'date.timezone = "Pacific/Auckland"' >> /usr/local/etc/php/conf.d/php.ini
+RUN echo 'cgi.fix_pathinfo = 0' >> /usr/local/etc/php/conf.d/php.ini
+RUN echo 'sendmail_path = /usr/bin/msmtp -t' >> /usr/local/etc/php/conf.d/php.ini
+RUN echo 'upload_max_filesize = 100M' >> /usr/local/etc/php/conf.d/php.ini
+RUN echo 'post_max_size = 150M' >> /usr/local/etc/php/conf.d/php.ini
+RUN echo 'memory_limit = 512M' >> /usr/local/etc/php/conf.d/php.ini
+
+# the PHP-fpm configuration
+RUN echo 'security.limit_extensions = .php' >> /usr/local/etc/php-fpm.d/www.conf
+RUN echo 'catch_workers_output = yes' >> /usr/local/etc/php-fpm.d/www.conf
+RUN echo 'php_admin_value[memory_limit] = 250M' >> /usr/local/etc/php-fpm.d/www.conf
+
 # set up cron tasks
 RUN echo '# cron jobs for Mautic - dave@oerfoundation.org' > /etc/cron.d/mautic-cron
 RUN echo '# see https://mautic.org/docs/en/setup/cron_jobs.html for details' >> /etc/cron.d/mautic-cron
@@ -35,6 +49,8 @@ RUN echo '# Social Monitoring 4 times daily' >> /etc/cron.d/mautic-cron
 RUN echo '15 3,9,15,21 * * * root php $CONSOLE ' >> /etc/cron.d/mautic-cron
 RUN echo '# Process Webhooks 4 times daily' >> /etc/cron.d/mautic-cron
 RUN echo '15 5,11,17,23 * * * root php $CONSOLE ' >> /etc/cron.d/mautic-cron
+RUN echo '# Just testing' >> /etc/cron.d/mautic-cron
+RUN echo '*/1 * * * * root echo "Running cron at $(date)" ' >> /etc/cron.d/mautic-cron
 
 VOLUME /var/www/html
 
