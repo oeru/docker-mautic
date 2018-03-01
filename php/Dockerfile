@@ -27,15 +27,31 @@ RUN set -ex \
         echo 'upload_max_filesize = 100M'; \
         echo 'post_max_size = 150M'; \
         echo 'memory_limit = 512M'; \
-    } | tee /usr/local/etc/php/conf.d/php.ini;
+        echo 'max_execution_time = 600'; \
+    } | tee /usr/local/etc/php/conf.d/php.ini
 
 # the PHP-fpm configuration
+RUN rm /usr/local/etc/php-fpm.d/www.conf
+RUN touch /usr/local/etc/php-fpm.d/www.conf
 RUN set -ex \
     && { \
+        echo '[global]'; \
+        echo 'error_log = /proc/self/fd/2'; \
+        echo '[www]'; \
+        echo 'user = www-data'; \
+        echo 'group = www-data'; \
+        echo '; if we send this to /proc/self/fd/1, it never appears'; \
+        echo 'access.log = /proc/self/fd/2'; \
+        echo 'clear_env = no'; \
         echo 'security.limit_extensions = .php'; \
         echo 'catch_workers_output = yes'; \
         echo 'php_admin_value[memory_limit] = 250M';\
-    } | /usr/local/etc/php-fpm.d/www.conf;
+        echo 'pm = ondemand'; \
+        echo 'pm.max_children = 20'; \
+        echo 'pm.start_servers = 2'; \
+        echo 'pm.min_spare_servers = 1'; \
+        echo 'pm.max_spare_servers = 3'; \
+    } | tee /usr/local/etc/php-fpm.d/www.conf
 
 VOLUME ['/var/www/html']
 
