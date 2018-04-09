@@ -34,7 +34,7 @@ if [ -z "$MAUTIC_DB_PASSWORD" ]; then
     exit 1
 fi
 
-if ! [ -e index.php -a -e app/AppKernel.php ]; then
+if ! [ -f index.php -a -e app/AppKernel.php ]; then
     echo >&2 "Mautic not found in $(pwd) - copying now..."
 
     if [ "$(ls -A)" ]; then
@@ -43,50 +43,83 @@ if ! [ -e index.php -a -e app/AppKernel.php ]; then
     fi
 
     tar cf - --one-file-system -C /usr/src/mautic . | tar xf -
+    chown -R www-data:www-data .
 
     echo >&2 "Complete! Mautic has been successfully copied to $(pwd)"
 fi
 
 # run composer to set up dependencies if not already there...
-if ! [ -e /usr/local/bin/composer ]; then
+
+if ! [ -f /usr/local/bin/composer ]; then
     echo >&2 "first getting Composer"
     # Get Composer
     curl -S https://getcomposer.org/installer | php
     chmod a+x composer.phar
     mv composer.phar /usr/local/bin/composer
 fi
-if ! [ -e vendor/autoload.php ]; then
-    echo >&2 "installing dependencies with Composer"
-    if ! [ -e .git/hooks ]; then
-        echo >&2 "creating a .git/hooks dir to avoid errors"
-        mkdir -p .git/hooks
+
+# check if composer's already running on this system of containers... 
+SEMAPH=composer-running
+
+if ! [ -f $SEMAPH ] ; then 
+        # create the semaphore file with the date in it... 
+            date > $SEMAPH
+
+    if ! [ -f vendor/autoload.php ]; then
+        echo >&2 "installing dependencies with Composer"
+        if ! [ -e .git/hooks ]; then
+            echo >&2 "creating a .git/hooks dir to avoid errors"
+            mkdir -p .git/hooks
+        fi
+    else
+        echo >&2 "vendor dependencies already in place."
     fi
+    #sudo -u www-data composer install
+    #echo >&2 "installing/updating vendor dependencies... running as user www-data"
+    echo >&2 "installing/updating vendor dependencies..."
+    composer install
+    chown -R www-data:www-data .
+    
+    #remove semaphore
+    rm $SEMAPH
 else
-    echo >&2 "vendor dependencies already in place."
+    echo >&2 "Looks like another composer is already running. If not, please remove $SEMAPH"
 fi
-echo >&2 "installing/updating vendor dependencies... running as user www-data"
-sudo -u www-data composer install
 
-# Ensure the MySQL Database is created
-php /makedb.php "$MAUTIC_DB_HOST" "$MAUTIC_DB_USER" "$MAUTIC_DB_PASSWORD" "$MAUTIC_DB_NAME"
+#
+# normally we expect a database to be pre-configured... in which case you just need
+# the appropriate details in app/config/local.php file, e.g.
+#
+#  <?php
+#    $parameters = array(
+#  	     'db_driver' => 'pdo_mysql',
+#     	 'db_host' => '[localhost or host IP or container name]',
+#	     'db_port' => '3306',
+#	     'db_name' => 'mautic',
+#	     'db_user' => 'mautic',
+#	     'db_password' => '[your password]',
+#  );
 
-echo >&2 "========================================================================"
-echo >&2
-echo >&2 "This server is now configured to run Mautic!"
-echo >&2 "You will need the following database information to install Mautic:"
-echo >&2 "Host Name: $MAUTIC_DB_HOST"
-echo >&2 "Database Name: $MAUTIC_DB_NAME"
-echo >&2 "Database Username: $MAUTIC_DB_USER"
-echo >&2 "Database Password: $MAUTIC_DB_PASSWORD"
-echo >&2
-echo >&2 "========================================================================"
+## Ensure the MySQL Database is created
+#php /makedb.php "$MAUTIC_DB_HOST" "$MAUTIC_DB_USER" "$MAUTIC_DB_PASSWORD" "$MAUTIC_DB_NAME"
+#
+#echo >&2 "========================================================================"
+#echo >&2
+#echo >&2 "This server is now configured to run Mautic!"
+#echo >&2 "You will need the following database information to install Mautic:"
+#echo >&2 "Host Name: $MAUTIC_DB_HOST"
+#echo >&2 "Database Name: $MAUTIC_DB_NAME"
+#echo >&2 "Database Username: $MAUTIC_DB_USER"
+#echo >&2 "Database Password: $MAUTIC_DB_PASSWORD"
+#echo >&2
+#echo >&2 "========================================================================"
 
 # Write the database connection to the config so the installer prefills it
-if ! [ -e app/config/local.php ]; then
-    php /makeconfig.php "$MAUTIC_DB_HOST" "$MAUTIC_DB_USER" "$MAUTIC_DB_PASSWORD" "$MAUTIC_DB_NAME"
-
-    # Make sure our web user owns the config file if it exists
-    chown www-data:www-data app/config/local.php
-fi
+#if ! [ -e app/config/local.php ]; then
+#    php /makeconfig.php "$MAUTIC_DB_HOST" "$MAUTIC_DB_USER" "$MAUTIC_DB_PASSWORD" "$MAUTIC_DB_NAME"
+#
+#    # Make sure our web user owns the config file if it exists
+#    chown www-data:www-data app/config/local.php
+#fi
 
 exec "$@"
